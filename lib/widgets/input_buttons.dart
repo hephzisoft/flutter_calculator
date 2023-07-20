@@ -4,18 +4,19 @@ import 'package:flutter/material.dart';
 class InputButtons extends StatelessWidget {
   const InputButtons(
       {required this.bgColor,
-
+      required this.identifier,
       super.key,
-        required this.child,
+      required this.child,
       required this.clickedInput});
 
   final Color bgColor;
   final Function clickedInput;
-  final  Widget child ;
+
+  final String identifier;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
