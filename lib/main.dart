@@ -1,10 +1,9 @@
 import 'package:calculator/customs_strings.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../widgets/buttons.dart';
 
-import 'widgets/input_buttons.dart';
+// import 'package:flutter/cupertino.dart';
+import 'package:math_expressions/math_expressions.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -27,232 +26,152 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
-  String result = '0';
-  String input = '2+2';
-  void _showClicked(String clickedInput) {
-   if (clickedInput == '00'|| clickedInput == '0'){
-     input;
-   }
+  String resultField = '0';
+  String inputField = '';
+
+  final List<String> buttons = [
+    'C',
+    '%',
+    '⌫',
+    '÷',
+    '7',
+    '8',
+    '9',
+    'x',
+    '4',
+    '5',
+    '6',
+    '-',
+    '1',
+    '2',
+    '3',
+    '+',
+    '00',
+    '0',
+    '.',
+    '=',
+  ];
+
+  bool isOperator(String value) {
+    if (value == 'C' ||
+        value == '%' ||
+        value == '⌫' ||
+        value == '÷' ||
+        value == 'x' ||
+        value == '-' ||
+        value == '+') {
+      return true;
+    }
+    return false;
+  }
+
+  void equalFunction() {
+    var finalInput = inputField;
+    finalInput = finalInput.replaceAll('x', '*');
+    finalInput = finalInput.replaceAll('÷', '/');
+    Parser p = Parser();
+    Expression exp = p.parse(finalInput);
+    ContextModel cm = ContextModel();
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+    
+    resultField = eval.toString();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     final appBar = AppBar(
       title: const Text('Calculator'),
       centerTitle: true,
     );
     return Scaffold(
       appBar: appBar,
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            alignment: Alignment.bottomRight,
-            height: (MediaQuery.of(context).size.height -
-                    appBar.preferredSize.height) *
-                0.33,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                    alignment: Alignment.centerRight,
-                    width: double.infinity,
-                    child:
-                        Text(input, style: GoogleFonts.poppins(fontSize: 50))),
-                const SizedBox(
-                  height: 10,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        inputField,
+                        style: const TextStyle(fontSize: 30),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        resultField,
+                        style: const TextStyle(fontSize: 30),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  width: double.infinity,
-                  child: Text(result, style: GoogleFonts.poppins(fontSize: 35)),
-                ),
-              ],
+              ),
             ),
-          ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            height: (MediaQuery.of(context).size.height -
-                    appBar.preferredSize.height) *
-                0.6,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: 'ac',
-                      child: const FaIcon(FontAwesomeIcons.c),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '%',
-                      child: const FaIcon(FontAwesomeIcons.percent),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: 'c',
-                      child: const Icon(
-                        Icons.backspace,
-                        size: 16,
-                      ),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '/',
-                      child: const Icon(
-                        CupertinoIcons.divide,
-                        size: 16,
-                      ),
-                    ),
-                  ],
+            Expanded(
+              flex: 2,
+              child: GridView.builder(
+                itemCount: buttons.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '7',
-                      child: const FaIcon(FontAwesomeIcons.seven),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '8',
-                      child: const FaIcon(FontAwesomeIcons.eight),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '9',
-                      child: const FaIcon(FontAwesomeIcons.nine),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: 'x',
-                      child: const Icon(
-                        CupertinoIcons.multiply,
-                        size: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '4',
-                      child: const FaIcon(FontAwesomeIcons.four),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '5',
-                      child: const FaIcon(FontAwesomeIcons.five),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '6',
-                      child: const FaIcon(FontAwesomeIcons.six),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '-',
-                      child: const Icon(
-                        CupertinoIcons.minus,
-                        size: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '1',
-                      child: const FaIcon(FontAwesomeIcons.one),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '2',
-                      child: const FaIcon(FontAwesomeIcons.two),
-                    ),
-                    InputButtons(
-                      bgColor: numbersColor,
-                      clickedInput: _showClicked,
-                      identifier: '3',
-                      child: const FaIcon(FontAwesomeIcons.three),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '+',
-                      child: const Icon(
-                        CupertinoIcons.add,
-                        size: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '00',
-                      child: const Text(
-                        '00',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '0',
-                      child: const FaIcon(FontAwesomeIcons.zero),
-                    ),
-                    InputButtons(
-                      bgColor: operatorsColor,
-                      clickedInput: _showClicked,
-                      identifier: '.',
-                      child:  const Icon(CupertinoIcons.stop_fill, size: 16,),
-                      // child:  Text('.', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 30),),
-                    ),
-                    InputButtons(
-                      bgColor: equalToColor,
-                      clickedInput: _showClicked,
-                      identifier: '=',
-                      child: const Icon(
-                        CupertinoIcons.equal,
-                        size: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                itemBuilder: (context, index) {
+                  if (index == buttons.length - 1) {
+                    return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          equalFunction();
+                        });
+                      },
+                      color: equalToColor,
+                      buttonText: buttons[index],
+                    );
+                  } else if (index == 0) {
+                    return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          inputField = '';
+                        });
+                      },
+                      color: Colors.red,
+                      buttonText: buttons[index],
+                    );
+                  } else if (index == 2) {
+                    return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          inputField =
+                              inputField.substring(0, inputField.length - 1);
+                        });
+                      },
+                      color: operatorsColor,
+                      buttonText: buttons[index],
+                    );
+                  } else {
+                    return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          inputField += buttons[index];
+                        });
+                      },
+                      color: isOperator(buttons[index])
+                          ? operatorsColor
+                          : numbersColor,
+                      buttonText: buttons[index],
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
